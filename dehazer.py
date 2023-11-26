@@ -48,9 +48,9 @@ class image_dehazer():
         self.sigma = sigma
         self.delta = delta
         self.showHazeTransmissionMap = showHazeTransmissionMap
-        self._A = []
-        self._transmission = []
-        self._WFun = []
+        self._A = []  # Estimated airlight
+        self._transmission = []  # Estimated transmission
+        self._WFun = []  # Weight function
 
     def __removeHaze(self, HazeImg):
         '''
@@ -66,8 +66,6 @@ class image_dehazer():
         HazeCorrectedImage : numpy.ndarray
             Dehazed image.
         '''
-        # This function will implement equation(3) in the paper
-        # "https://www.cv-foundation.org/openaccess/content_iccv_2013/papers/Meng_Efficient_Image_Dehazing_2013_ICCV_paper.pdf"
 
         epsilon = 0.0001
         Transmission = pow(np.maximum(abs(self._transmission), epsilon), self.delta)
@@ -100,20 +98,25 @@ class image_dehazer():
         HazeTransmissionMap : numpy.ndarray
             Haze transmission map.
         '''
+        # Estimate airlight
         A = airlight_estimation.AirlightEstimation(HazeImg, self.airlightEstimation_windowSze, self._A)
         self._A = A
 
+        # Boundary constraint for transmission estimation
         A, Transmission, C0, C1 = bound_con.BoundCon(HazeImg, self.boundaryConstraint_windowSze, self._A,
                                                      self._transmission, self.C0, self.C1)
         self._A, self._transmission, self.C0, self.C1 = A, Transmission, C0, C1
 
+        # Calculate haze transmission using regularization
         Transmission = cal_Trasmission.CalTransmission(HazeImg, self._transmission, self.sigma, self.regularize_lambda)
-        if (self.showHazeTransmissionMap):
+        
+        if self.showHazeTransmissionMap:
             cv2.imshow("Haze Transmission Map", Transmission)
             cv2.waitKey(1)
         
         self._transmission = Transmission
 
+        # Dehaze the image
         haze_corrected_img = self.__removeHaze(HazeImg)
         HazeTransmissionMap = self._transmission
         return haze_corrected_img, HazeTransmissionMap
@@ -151,11 +154,12 @@ def remove_haze(HazeImg, airlightEstimation_windowSze=15, boundaryConstraint_win
     HazeTransmissionMap : numpy.ndarray
         Haze transmission map.
     '''
+    # Create an instance of the image_dehazer class
     Dehazer = image_dehazer(airlightEstimation_windowSze=airlightEstimation_windowSze,
                             boundaryConstraint_windowSze=boundaryConstraint_windowSze, C0=C0, C1=C1,
                             regularize_lambda=regularize_lambda, sigma=sigma, delta=delta,
                             showHazeTransmissionMap=showHazeTransmissionMap)
+    
+    # Remove haze from the input hazy image using the image_dehazer instance
     HazeCorrectedImg, HazeTransmissionMap = Dehazer.remove_haze(HazeImg)
     return HazeCorrectedImg, HazeTransmissionMap
-
-    

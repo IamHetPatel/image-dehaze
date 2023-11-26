@@ -2,7 +2,25 @@ import numpy as np
 import convulation_Filter 
 
 def CalculateWeightingFunction(HazeImg, Filter, sigma):
-    # Calculate weighting function...
+    """
+    Calculate the weighting function based on the circular convolution of the input image with a given filter.
+
+    Parameters
+    ----------
+    HazeImg : numpy.ndarray
+        Input hazy image.
+    Filter : numpy.ndarray
+        Filter for circular convolution.
+    sigma : float
+        Standard deviation for the Gaussian function.
+
+    Returns
+    -------
+    WeightingFunction : numpy.ndarray
+        Calculated weighting function.
+    """
+
+    # Convert HazeImg to double precision in the range [0, 1]
     HazeImageDouble = HazeImg.astype(float) / 255.0
 
     if (len(HazeImg.shape) == 3):
@@ -15,9 +33,12 @@ def CalculateWeightingFunction(HazeImg, Filter, sigma):
 
         Blue = HazeImageDouble[:, :, 0]
         d_b = convulation_Filter.circularConvFilt(Blue, Filter)
-           
-        return (np.exp(-((d_r ** 2) + (d_g ** 2) + (d_b ** 2)) / (2 * sigma * sigma)))
+
+        # Calculate and return the exponential of the negative squared sum
+        return np.exp(-((d_r ** 2) + (d_g ** 2) + (d_b ** 2)) / (2 * sigma * sigma))
     else:
         # Handle grayscale image
         d = convulation_Filter.circularConvFilt(HazeImageDouble, Filter)
-        return (np.exp(-((d ** 2) + (d ** 2) + (d ** 2)) / (2 * sigma * sigma)))
+
+        # Calculate and return the exponential of the negative squared sum
+        return np.exp(-((d ** 2) + (d ** 2) + (d ** 2)) / (2 * sigma * sigma))

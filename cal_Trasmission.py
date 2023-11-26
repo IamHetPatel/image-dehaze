@@ -7,6 +7,26 @@ import OTF
 import convulation_Filter   
 
 def CalTransmission(HazeImg, Transmission, sigma, regularize_lambda):
+    """
+    Calculate the transmission map for dehazing using the Kirsch filter-based approach.
+
+    Parameters
+    ----------
+    HazeImg : numpy.ndarray
+        Hazy input image.
+    Transmission : numpy.ndarray
+        Initial estimate of the transmission map.
+    sigma : float
+        Parameter for the weighting function.
+    regularize_lambda : float
+        Regularization parameter.
+
+    Returns
+    -------
+    Transmission : numpy.ndarray
+        Refined transmission map.
+    """
+
     # Initialize dimensions
     rows, cols = Transmission.shape
 
@@ -47,8 +67,9 @@ def CalTransmission(HazeImg, Transmission, sigma, regularize_lambda):
         # Fix u, solve for t
         Transmission = np.abs(np.fft.ifft2((gamma * tF + DU) / (gamma + DS)))
         beta = beta * beta_rate
-    
+
     return Transmission
+
 
         
     
