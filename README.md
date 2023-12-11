@@ -18,14 +18,14 @@ This simple image dehazing tool allows users to interactively select an image fi
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/image-dehazing-tool.git
+    git clone https://github.com/dharmikjethva30/image-dehazing-tool.git
     cd image-dehazing-tool
     ```
 
 2. **Install the required dependencies:**
 
     ```bash
-    pip install opencv-python-headless numpy
+    pip install opencv-python numpy
     ```
 
 3. **Run the tool:**
