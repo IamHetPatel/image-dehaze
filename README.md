@@ -18,8 +18,8 @@ This simple image dehazing tool allows users to interactively select an image fi
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/dharmikjethva30/image-dehazing-tool.git
-    cd image-dehazing-tool
+    git clone https://github.com/dharmikjethva30/image-dehaze.git
+    cd image-dehaze
     ```
 
 2. **Install the required dependencies:**
